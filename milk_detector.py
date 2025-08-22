@@ -9,6 +9,8 @@ import numpy as np
 import time
 import yaml
 from picamera2 import Picamera2
+from picamera2.encoders import JpegEncoder
+from picamera2.sensors.controls import Controls
 import tflite_runtime.interpreter as tflite
 
 class MilkPacketDetector:
@@ -21,10 +23,13 @@ class MilkPacketDetector:
         print("Initializing camera...")
         self.picam2 = Picamera2()
         
-        # Create minimal configuration with required transform attribute
+        # Create minimal configuration without transform
         print("Creating minimal camera configuration...")
         config = self.picam2.create_preview_configuration()
-        config["transform"] = None  # Add the missing transform attribute
+        
+        # Remove transform from config to avoid type issues
+        if "transform" in config:
+            del config["transform"]
         
         # Configure camera
         print("Configuring camera...")
