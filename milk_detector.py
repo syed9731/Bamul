@@ -17,23 +17,39 @@ class MilkPacketDetector:
         with open(config_path, 'r') as f:
             self.config = yaml.safe_load(f)
         
-        # Initialize camera with simpler configuration
+        # Initialize camera with minimal configuration
         self.picam2 = Picamera2()
         
-        # Use basic preview configuration
-        preview_config = self.picam2.create_preview_configuration(
-            main={"size": (self.config['resolution']['width'], self.config['resolution']['height'])}
-        )
-        self.picam2.configure(preview_config)
-        self.picam2.start()
+        # Use the most basic configuration possible
+        try:
+            # Try minimal configuration first
+            self.picam2.configure(self.picam2.create_preview_configuration())
+        except Exception as e:
+            print(f"Warning: Could not configure camera with preview config: {e}")
+            try:
+                # Fallback to even more basic config
+                self.picam2.configure(self.picam2.create_still_configuration())
+            except Exception as e2:
+                print(f"Warning: Could not configure camera with still config: {e2}")
+                # Last resort - no configuration
+                pass
         
-        # Set camera controls using the correct API
+        # Start camera
+        try:
+            self.picam2.start()
+        except Exception as e:
+            print(f"Error starting camera: {e}")
+            raise
+        
+        # Try to set camera controls (optional)
         try:
             self.picam2.set_controls({"ExposureTime": self.config['camera']['exposure_time']})
+        except:
+            pass
+        try:
             self.picam2.set_controls({"AnalogueGain": self.config['camera']['analogue_gain']})
-        except Exception as e:
-            print(f"Warning: Could not set camera controls: {e}")
-            print("Using default camera settings")
+        except:
+            pass
         
         # Initialize TFLite interpreter
         self.interpreter = tflite.Interpreter(model_path=self.config['model']['path'])
