@@ -9,8 +9,6 @@ import numpy as np
 import time
 import yaml
 from picamera2 import Picamera2
-from picamera2.encoders import JpegEncoder
-from picamera2.sensors.controls import Controls
 import tflite_runtime.interpreter as tflite
 
 class MilkPacketDetector:
@@ -27,10 +25,9 @@ class MilkPacketDetector:
         ))
         self.picam2.start()
         
-        # Set camera controls
-        controls = Controls(self.picam2)
-        controls.ExposureTime = self.config['camera']['exposure_time']
-        controls.AnalogueGain = self.config['camera']['analogue_gain']
+        # Set camera controls using the correct API
+        self.picam2.set_controls({"ExposureTime": self.config['camera']['exposure_time']})
+        self.picam2.set_controls({"AnalogueGain": self.config['camera']['analogue_gain']})
         
         # Initialize TFLite interpreter
         self.interpreter = tflite.Interpreter(model_path=self.config['model']['path'])
