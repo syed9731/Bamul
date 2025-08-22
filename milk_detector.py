@@ -17,12 +17,21 @@ class MilkPacketDetector:
         with open(config_path, 'r') as f:
             self.config = yaml.safe_load(f)
         
-        # Initialize camera with NO configuration to avoid transform errors
+        # Initialize camera with minimal configuration
         print("Initializing camera...")
         self.picam2 = Picamera2()
         
-        # Start camera without any configuration
-        print("Starting camera without configuration...")
+        # Create minimal configuration with required transform attribute
+        print("Creating minimal camera configuration...")
+        config = self.picam2.create_preview_configuration()
+        config["transform"] = None  # Add the missing transform attribute
+        
+        # Configure camera
+        print("Configuring camera...")
+        self.picam2.configure(config)
+        
+        # Start camera
+        print("Starting camera...")
         self.picam2.start()
         print("Camera started successfully!")
         
@@ -203,4 +212,4 @@ class MilkPacketDetector:
 
 if __name__ == "__main__":
     detector = MilkPacketDetector()
-    detector.run() 
+    detector.run()
