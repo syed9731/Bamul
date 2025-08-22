@@ -1,0 +1,32 @@
+# Milk Packet Detector Configuration
+# Raspberry Pi 4 with PiCamera
+
+# Camera settings
+camera:
+  exposure_time: 10000      # Exposure time in microseconds (adjust for lighting)
+  analogue_gain: 1.0        # Analogue gain (1.0 = no gain)
+
+# Resolution settings
+resolution:
+  width: 640                # Frame width (lower = faster processing)
+  height: 480               # Frame height (lower = faster processing)
+
+# Model settings
+model:
+  path: "model/best_float32.tflite"  # Path to your TFLite model
+  input_width: 320          # Model input width (must match your model)
+  input_height: 320         # Model input height (must match your model)
+
+# Detection settings
+detection:
+  confidence_threshold: 0.5  # Minimum confidence for detection (0.0 to 1.0)
+  nms_threshold: 0.4        # Non-maximum suppression threshold
+
+# Performance settings
+fps: 15                     # Target FPS (lower = faster processing, higher = smoother video)
+
+# Counting line settings
+counting_line:
+  position: "middle"        # "middle", "top", "bottom", or custom Y position
+  custom_y: null            # Custom Y position if not using preset
+  tolerance: 20             # Pixel tolerance for line crossing detection 
