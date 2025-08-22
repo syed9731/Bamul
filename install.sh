@@ -8,9 +8,9 @@ sudo apt update && sudo apt upgrade -y
 
 # Install system dependencies
 echo "Installing system dependencies..."
-sudo apt install -y python3-pip python3-venv python3-opencv
+sudo apt install -y python3-pip python3-venv
 sudo apt install -y libatlas-base-dev libhdf5-dev libhdf5-serial-dev
-sudo apt install -y libjasper-dev libqtcore4 libqtgui4 libqt4-test
+sudo apt install -y libjasper-dev
 
 # Install PiCamera2
 echo "Installing PiCamera2..."
