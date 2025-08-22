@@ -17,43 +17,23 @@ class MilkPacketDetector:
         with open(config_path, 'r') as f:
             self.config = yaml.safe_load(f)
         
-        # Initialize camera with minimal configuration
+        # Initialize camera with NO configuration to avoid transform errors
+        print("Initializing camera...")
         self.picam2 = Picamera2()
         
-        # Use the most basic configuration possible
-        try:
-            # Try minimal configuration first
-            self.picam2.configure(self.picam2.create_preview_configuration())
-        except Exception as e:
-            print(f"Warning: Could not configure camera with preview config: {e}")
-            try:
-                # Fallback to even more basic config
-                self.picam2.configure(self.picam2.create_still_configuration())
-            except Exception as e2:
-                print(f"Warning: Could not configure camera with still config: {e2}")
-                # Last resort - no configuration
-                pass
+        # Start camera without any configuration
+        print("Starting camera without configuration...")
+        self.picam2.start()
+        print("Camera started successfully!")
         
-        # Start camera
-        try:
-            self.picam2.start()
-        except Exception as e:
-            print(f"Error starting camera: {e}")
-            raise
-        
-        # Try to set camera controls (optional)
-        try:
-            self.picam2.set_controls({"ExposureTime": self.config['camera']['exposure_time']})
-        except:
-            pass
-        try:
-            self.picam2.set_controls({"AnalogueGain": self.config['camera']['analogue_gain']})
-        except:
-            pass
+        # Wait a moment for camera to initialize
+        time.sleep(2)
         
         # Initialize TFLite interpreter
+        print("Loading TFLite model...")
         self.interpreter = tflite.Interpreter(model_path=self.config['model']['path'])
         self.interpreter.allocate_tensors()
+        print("Model loaded successfully!")
         
         # Get model details
         self.input_details = self.interpreter.get_input_details()
@@ -140,9 +120,12 @@ class MilkPacketDetector:
     
     def draw_overlay(self, frame, detections):
         """Draw detection boxes and counting information on frame"""
+        # Get frame dimensions
+        height, width = frame.shape[:2]
+        
         # Draw counting line
         cv2.line(frame, (0, self.counting_line_y), 
-                (self.config['resolution']['width'], self.counting_line_y), 
+                (width, self.counting_line_y), 
                 (0, 255, 0), 2)
         
         # Draw detection boxes
