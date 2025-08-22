@@ -9,8 +9,6 @@ import numpy as np
 import time
 import yaml
 from picamera2 import Picamera2
-from picamera2.encoders import JpegEncoder
-from picamera2.sensors.controls import Controls
 import tflite_runtime.interpreter as tflite
 
 class MilkPacketDetector:
